@@ -1,3 +1,4 @@
 node_modules
 config.js
 logger.log
+public/apidoc
