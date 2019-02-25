@@ -8,10 +8,11 @@ var functions = require(path.resolve('./', 'utils/functions.js'));
 
 
 exports.registerUser = (req, res) => {
+
     var user = {
-        'fullName': req.body.requestData.fullName,
-        'emailId': req.body.requestData.emailId,
-        'password': req.body.requestData.password
+        'fullName': req.body.fullName,
+        'emailId': req.body.emailId,
+        'password': req.body.password
     }
 
     var params = [user.fullName, user.emailId, functions.encrypt(user.password)]
@@ -41,7 +42,7 @@ exports.registerUser = (req, res) => {
 exports.loginUser = (req, res) => {
     var strQuery = {
         sql: "select * from users where emailId = ? and isDeleted = ?",
-        values: [req.body.requestData.emailId, 0]
+        values: [req.body.emailId, 0]
     };
 
     db.query(strQuery, (error, results, fields) => {
@@ -50,7 +51,7 @@ exports.loginUser = (req, res) => {
             res.send(responseGenerator.getResponse(1005, msg.dbError, null))
         } else {
             if (results && results.length > 0) {
-                if (req.body.requestData.password == functions.decrypt(results[0].password)) {
+                if (req.body.password == functions.decrypt(results[0].password)) {
                     //generation of jwt token
 
                     res.send(responseGenerator.getResponse(200, "Login successful", {
