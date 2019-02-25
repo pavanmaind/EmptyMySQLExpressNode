@@ -7,7 +7,7 @@ var msg = require(path.resolve('./', 'utils/errorMessages.js'));
 var functions = require(path.resolve('./', 'utils/functions.js'));
 
 
-exports.registerUser = function (req, res) {
+exports.registerUser = (req, res) => {
     var user = {
         'fullName': req.body.requestData.fullName,
         'emailId': req.body.requestData.emailId,
@@ -15,7 +15,7 @@ exports.registerUser = function (req, res) {
     }
 
     var params = [user.fullName, user.emailId, functions.encrypt(user.password)]
-    db.query('call SignupUser(?,?,?)', params, function (error, results) {
+    db.query('call SignupUser(?,?,?)', params, (error, results) => {
         if (!error) {
             //check for email already exists in DB
             if (results[0][0].IsOldRecord == 1) {
@@ -38,13 +38,13 @@ exports.registerUser = function (req, res) {
 }
 
 
-exports.loginUser = function (req, res) {
+exports.loginUser = (req, res) => {
     var strQuery = {
         sql: "select * from users where emailId = ? and isDeleted = ?",
         values: [req.body.requestData.emailId, 0]
     };
 
-    db.query(strQuery, function (error, results, fields) {
+    db.query(strQuery, (error, results, fields) => {
         if (error) {
             logger.error("Error while processing your request", error);
             res.send(responseGenerator.getResponse(1005, msg.dbError, null))

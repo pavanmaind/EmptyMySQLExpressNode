@@ -3,7 +3,7 @@ var config = require(path.resolve('./', 'config'));
 const CryptoJS = require("crypto-js");
 
 
-function decrypt(encryptedText) {
+const decrypt = (encryptedText) => {
     var encrypted = CryptoJS.AES.decrypt(encryptedText, config.secretKey);
     var plainText = encrypted.toString(CryptoJS.enc.Utf8);
     if (plainText == "")
@@ -13,7 +13,7 @@ function decrypt(encryptedText) {
 }
 
 // method to encrypt password
-function encrypt(plainText) {
+const encrypt = (plainText) => {
     var encrypted = CryptoJS.AES.encrypt(plainText, config.secretKey);
     var encryptedText = encrypted.toString();
     return encryptedText;
