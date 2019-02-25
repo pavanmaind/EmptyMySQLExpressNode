@@ -16,3 +16,5 @@ MySQL
 Install mysql server
 
 https://dev.mysql.com/doc/mysql-installer/en/
+
+Import database
