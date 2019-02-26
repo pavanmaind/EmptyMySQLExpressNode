@@ -5,19 +5,19 @@ This is a user login and registration app using Node.js, Express, MySQL and some
 
 Version: 1.0.0
 
-###Usage
+## Usage
 
 $ npm install
 
 $ npm start
 
-###MySQL
+## MySQL
 
 Install mysql server
 
 https://dev.mysql.com/doc/mysql-installer/en/
 
-### Import Database
+## Import Database
 ```
 mysql -u root -p
 mysql> create database tech;
