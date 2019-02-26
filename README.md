@@ -5,11 +5,6 @@ This is a user login and registration app using Node.js, Express, MySQL and some
 
 Version: 1.0.0
 
-## Usage
-
-$ npm install
-
-$ npm start
 
 ## MySQL
 
@@ -23,6 +18,13 @@ mysql -u root -p
 mysql> create database tech;
 mysql> use tecg;
 mysql> source file.sql;
+```
+
+## Usage
+```
+$ npm install
+
+$ npm start
 ```
 
 ##  APIs
