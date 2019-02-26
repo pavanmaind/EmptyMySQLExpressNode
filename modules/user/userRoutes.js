@@ -1,7 +1,7 @@
-var path = require('path');
-var api = require(path.resolve('.', 'modules/user/userController.js'))
-var express = require('express');
-var router = express.Router();
+const path = require('path');
+const api = require(path.resolve('.', 'modules/user/userController.js'))
+const express = require('express');
+const router = express.Router();
 
 
 /**

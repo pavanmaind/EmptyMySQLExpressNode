@@ -1,9 +1,9 @@
-var mysql = require('mysql');
-var path = require('path');
-var config = require(path.resolve('./', 'config'))
+const mysql = require('mysql');
+const path = require('path');
+const config = require(path.resolve('./', 'config'))
 
 
-var db_config = {
+const db_config = {
     host: config.databaseHost,
     user: config.databaseUser,
     password: config.databasePassword,
@@ -12,7 +12,7 @@ var db_config = {
     port: config.databasePort
 }
 
-var connection;
+let connection;
 
 function handleDisconnect() {
     connection = mysql.createConnection(db_config); // Recreate the connection, since

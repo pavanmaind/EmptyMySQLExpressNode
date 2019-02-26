@@ -1,3 +1,4 @@
 module.exports = {
-    dbError : 'Failed to process your request'
+    dbError : 'Failed to process your request',
+    serverError: 'Server Error'
 }
