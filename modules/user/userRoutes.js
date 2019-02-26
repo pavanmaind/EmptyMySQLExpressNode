@@ -6,12 +6,14 @@ const router = express.Router();
 
 /**
  * @api {post} /user/registerUser Register User
- * @apiName Register User
+ * @apiName registerUser
  * @apiGroup User
  *
  * @apiParam {String} fullName - Full Name
  * @apiParam {String} emailId - Email Id
  * @apiParam {String} password - Password
+ * 
+ * @apiParamExample {json} Request-Example:
  *  {
  *      	"fullName": "Pavan Maind",
  *       	"emailId": "pavanm@winjit.com",
@@ -50,11 +52,12 @@ router.post('/registerUser', api.registerUser);
 
 /**
  * @api {post} /user/loginUser Login User
- * @apiName Login User
+ * @apiName loginUser
  * @apiGroup User
  *
  * @apiParam {String} emailId - Email Id
  * @apiParam {String} password - Password
+ * @apiParamExample {json} Request-Example:
  *  {
  *       	"emailId": "pavanm@winjit.com",
  *       	"password": "winjit"
