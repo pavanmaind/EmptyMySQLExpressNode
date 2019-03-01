@@ -17,7 +17,7 @@ https://dev.mysql.com/doc/mysql-installer/en/
 mysql -u root -p
 mysql> create database tech;
 mysql> use tecg;
-mysql> source file.sql;
+mysql> source db.sql;
 ```
 
 ## Usage

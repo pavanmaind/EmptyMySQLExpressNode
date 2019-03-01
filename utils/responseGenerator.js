@@ -1,7 +1,7 @@
 
 exports.getResponse = function (status, msg, data) {
 
-    var response = {
+    let response = {
         "status": status,
         "message": msg,
         "responseData": data
