@@ -1,8 +1,10 @@
 const path = require('path');
+var jwt = require('jsonwebtoken');
 const db = require(path.resolve('.', 'modules/database/databaseConnector.js'));
 const msg = require(path.resolve('./', 'utils/errorMessages.js'));
 const functions = require(path.resolve('./', 'utils/functions.js'));
 const logger = require(path.resolve('./logger'));
+const config = require(path.resolve('./config'));
 
 // Create container
 const userModel = {};
@@ -69,13 +71,24 @@ userModel.loginUser = (req) => {
                         if (results && results.length > 0) {
                             const hash = functions.hashPassword(userCredentials.password, results[0].secretKey);
                             if (hash == results[0].passwordHash) {
+
                                 //generation of jwt token
+                                const token = jwt.sign(
+                                    {
+                                        emailId: results[0].emailId,
+                                        fullName: results[0].fullName,
+                                        userId: results[0].userId
+                                    }, config.privateKey, {
+                                        expiresIn: '365d'
+                                        // expiresIn: '1m'
+                                    });
 
                                 return resolve({
                                     code: 200, message: "Login successful", data: {
                                         fullName: results[0].fullName,
                                         emailId: results[0].emailId,
-                                        userId: results[0].userId
+                                        userId: results[0].userId,
+                                        token: token
                                     }
                                 });
                             }
@@ -101,6 +114,57 @@ userModel.loginUser = (req) => {
     })
 }
 
+
+
+
+userModel.getUser = (req) => {
+    return new Promise(async (resolve, reject) => {
+
+        let strQuery = {
+            sql: "select userId, fullName, emailId from users where userId = ? and isDeleted = ?",
+            values: [req.result.userId, 0]
+        };
+
+        let obj = {};
+
+        db.query(strQuery, (error, results, fields) => {
+            if (error) {
+                logger.error("Error while processing your request", error);
+                return reject({ code: 1005, message: msg.dbError, data: null });
+                // res.send(responseGenerator.getResponse(1005, msg.dbError, null))
+            } else {
+                if (results && results.length > 0) {
+                    obj = results[0];
+
+                    strQuery = {
+                        sql: "select contactId, contactNumber, countryCode, extension, type from contacts where userId = ? and isDeleted = ?",
+                        values: [req.result.userId, 0]
+                    };
+
+                    db.query(strQuery, (errorFetchContacts, resultsFetchContacts, fieldsFetchContacts) => {
+                        if (errorFetchContacts) {
+                            logger.error("Error while processing your request", errorFetchContacts);
+                            return reject({ code: 1005, message: msg.dbError, data: null });
+                            // res.send(responseGenerator.getResponse(1005, msg.dbError, null))
+                        } else {
+                            if (resultsFetchContacts && resultsFetchContacts.length > 0) {
+                                obj.contactInfo = resultsFetchContacts;
+                                return resolve({ code: 200, message: "Success", data: obj });
+                            }
+                            else {
+                                return reject({ code: 1007, message: msg.noRecordExists, data: null });
+                            }
+                        }
+                    });
+                }
+                else {
+                    return reject({ code: 1007, message: msg.noRecordExists, data: null });
+                }
+            }
+        });
+
+    })
+}
 
 
 // function to validate userdata

@@ -31,3 +31,17 @@ exports.registerUser = async (req, res) => {
 
 }
 
+
+exports.getUser = async (req, res) => {
+
+    try {
+        let response = await userModel.getUser(req);
+        if (response) {
+            res.send(responseGenerator.getResponse(response.code, response.message, response.data));
+        }
+    }
+    catch (error) {
+        res.send(responseGenerator.getResponse(error.code, error.message, error.data));
+    }
+
+}
