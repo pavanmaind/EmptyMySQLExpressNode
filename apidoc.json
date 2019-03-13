@@ -2,6 +2,5 @@
     "name": "Login Registration Rest API Service",
     "title": "Login Registration API",
     "version": "0.1.0",
-    "description": "Login Registration app API Documentation",
-    "sampleUrl": "http://localhost:3000"
+    "description": "Login Registration app API Documentation"
 }

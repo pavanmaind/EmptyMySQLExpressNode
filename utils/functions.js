@@ -6,7 +6,7 @@ const config = require(path.resolve('./', 'config'));
 const logger = require(path.resolve('./logger'));
 const msg = require(path.resolve('./', 'utils/errorMessages.js'));
 const responseGenerator = require(path.resolve('.', 'utils/responseGenerator.js'));
-
+const nodemailer = require('nodemailer');
 
 const hashPassword = (password, secret) => {
     // validate input parameters
@@ -36,7 +36,7 @@ const createRandomString = (stringLength) => {
 
 
 
-const verifyToken = function (req, res, next) {
+const verifyToken = (req, res, next) => {
 
     var token = req.headers.auth;
 
@@ -52,9 +52,43 @@ const verifyToken = function (req, res, next) {
 
 }
 
+const sendEmail = (to, subject, message, callback) => {
+    var transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: '587',
+        auth: {
+            user: config.emailAccountUserName,
+            pass: config.emailAccountPassword
+        }
+
+    });
+
+    var mailOptions = {
+        from: config.emailAccountUserName,
+        to: to,
+        subject: subject,
+        html: message
+    };
+
+    transporter.sendMail(mailOptions, function (err, info) {
+
+        if (err) {
+
+            console.log("sending email error:" + err);
+        }
+        if (callback) {
+
+            callback(err, info);
+        }
+
+    })
+
+}
+
 
 module.exports = {
     hashPassword: hashPassword,
     createRandomString: createRandomString,
-    verifyToken: verifyToken
+    verifyToken: verifyToken,
+    sendEmail: sendEmail
 };

@@ -45,3 +45,64 @@ exports.getUser = async (req, res) => {
     }
 
 }
+
+
+exports.getUsersList = async (req, res) => {
+
+    try {
+        let response = await userModel.getUsersList(req);
+        if (response) {
+            res.send(responseGenerator.getResponse(response.code, response.message, response.data));
+        }
+    }
+    catch (error) {
+        res.send(responseGenerator.getResponse(error.code, error.message, error.data));
+    }
+
+}
+
+
+exports.bulkInsertUsers = async (req, res) => {
+
+    try {
+        let response = await userModel.bulkInsertUsers(req);
+        if (response) {
+            res.send(responseGenerator.getResponse(response.code, response.message, response.data));
+        }
+    }
+    catch (error) {
+        res.send(responseGenerator.getResponse(error.code, error.message, error.data));
+    }
+
+}
+
+exports.bulkUpdateUsers = async (req, res) => {
+
+    try {
+        let response = await userModel.bulkUpdateUsers(req);
+        if (response) {
+            res.send(responseGenerator.getResponse(response.code, response.message, response.data));
+        }
+    }
+    catch (error) {
+        res.send(responseGenerator.getResponse(error.code, error.message, error.data));
+    }
+
+}
+
+
+
+exports.bulkDeleteUsers = async (req, res) => {
+
+    try {
+        let response = await userModel.bulkDeleteUsers(req);
+        if (response) {
+            res.send(responseGenerator.getResponse(response.code, response.message, response.data));
+        }
+    }
+    catch (error) {
+        res.send(responseGenerator.getResponse(error.code, error.message, error.data));
+    }
+
+}
+

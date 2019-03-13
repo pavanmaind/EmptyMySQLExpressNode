@@ -94,12 +94,7 @@
     },
     "version": "0.0.0",
     "filename": "modules/contact/contactRoutes.js",
-    "groupTitle": "Contact",
-    "sampleRequest": [
-      {
-        "url": "http://localhost:3000/contact/addContact"
-      }
-    ]
+    "groupTitle": "Contact"
   },
   {
     "type": "post",
@@ -168,12 +163,7 @@
     },
     "version": "0.0.0",
     "filename": "modules/contact/contactRoutes.js",
-    "groupTitle": "Contact",
-    "sampleRequest": [
-      {
-        "url": "http://localhost:3000/contact/deleteContact"
-      }
-    ]
+    "groupTitle": "Contact"
   },
   {
     "type": "post",
@@ -270,12 +260,253 @@
     },
     "version": "0.0.0",
     "filename": "modules/contact/contactRoutes.js",
-    "groupTitle": "Contact",
-    "sampleRequest": [
-      {
-        "url": "http://localhost:3000/contact/updateContact"
+    "groupTitle": "Contact"
+  },
+  {
+    "type": "post",
+    "url": "/user/bulkDeleteUsers",
+    "title": "Bulk delete users",
+    "name": "bulkDeleteUsers",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth",
+            "description": "<p>Users unique access-token.</p>"
+          }
+        ]
       }
-    ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": true,
+            "field": "userData",
+            "description": "<ul> <li>userData</li> </ul>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "[\n{\n\t\t\"userId\": 25\n},\n{\n\t\t\"userId\": 27\n}]",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>Object</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n{\n    \"status\": 200,\n    \"message\": \"Success\",\n    \"responseData\": [\n        {\n            \"userId\": 25,\n            \"status\": \"No record exists\"\n        },\n        {\n            \"userId\": 27,\n            \"status\": \"Deleted Successfully\"\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Bad",
+            "description": "<p>Request</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "    HTTP/1.1 500 UNAUTHORIZED\n{\n    \"status\": 1050,\n    \"message\": \"Invalid token\",\n    \"responseData\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "modules/user/userRoutes.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/bulkInsertUsers",
+    "title": "Bulk insert users",
+    "name": "bulkInsertUsers",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth",
+            "description": "<p>Users unique access-token.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": true,
+            "field": "userData",
+            "description": "<ul> <li>userData</li> </ul>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "[{\n\t\t\"fullName\": \"Pavan Maind\",\n\t\t\"emailId\": \"pavanm@winjit.com\"\n},\n{\n\t\t\"fullName\": \"Himanshu Patel\",\n\t\t\"emailId\": \"hp@winjit.com\"\n}]",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>Object</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n{\n    \"status\": 200,\n    \"message\": \"Success\",\n    \"responseData\": [\n        {\n            \"emailId\": \"pavanm@winjit.com\",\n            \"status\": \"Email Already Exists\"\n        },\n        {\n            \"emailId\": \"hp@winjit.com\",\n            \"status\": \"Success\"\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Bad",
+            "description": "<p>Request</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "    HTTP/1.1 500 UNAUTHORIZED\n{\n    \"status\": 1050,\n    \"message\": \"Invalid token\",\n    \"responseData\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "modules/user/userRoutes.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/bulkUpdateUsers",
+    "title": "Bulk update users",
+    "name": "bulkUpdateUsers",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth",
+            "description": "<p>Users unique access-token.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": true,
+            "field": "userData",
+            "description": "<ul> <li>userData</li> </ul>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "[{\n\t\t\"userId\": 23,\n\t\t\"fullName\": \"Danish Shaikh\"\n},\n{\n\t\t\"userId\": 26,\n\t\t\"fullName\": \"Amol Avhad\"\n}]",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>Object</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n{\n    \"status\": 200,\n    \"message\": \"Success\",\n    \"responseData\": [\n        {\n            \"userId\": 23,\n            \"status\": \"No record exists\"\n        },\n        {\n            \"userId\": 26,\n            \"status\": \"Updated Successfully\"\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Bad",
+            "description": "<p>Request</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "    HTTP/1.1 500 UNAUTHORIZED\n{\n    \"status\": 1050,\n    \"message\": \"Invalid token\",\n    \"responseData\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "modules/user/userRoutes.js",
+    "groupTitle": "User"
   },
   {
     "type": "get",
@@ -337,12 +568,124 @@
     },
     "version": "0.0.0",
     "filename": "modules/user/userRoutes.js",
-    "groupTitle": "User",
-    "sampleRequest": [
-      {
-        "url": "http://localhost:3000/user/getUser"
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/getUsersList",
+    "title": "Get Users",
+    "name": "getUsersList",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth",
+            "description": "<p>Users unique access-token.</p>"
+          }
+        ]
       }
-    ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "skip",
+            "description": "<ul> <li>skip</li> </ul>"
+          },
+          {
+            "group": "Parameter",
+            "type": "number",
+            "optional": false,
+            "field": "take",
+            "description": "<ul> <li>take</li> </ul>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "order_by",
+            "description": "<ul> <li>Object {</li> </ul>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "selector",
+            "description": "<ul> <li>selector</li> </ul>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "desc",
+            "description": "<ul> <li>desc }</li> </ul>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": true,
+            "field": "search_by",
+            "description": "<ul> <li>search_by</li> </ul>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n    \"skip\": 0,\n    \"take\": 50,\n    \"order_by\": {\n        \"selector\": \"userId\",\n        \"desc\": false\n    },\n    \"search_by\": [\n        {\n            \"userId\": 14\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "User",
+            "description": "<p>'s list</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n{\n    \"status\": 200,\n    \"message\": \"Success\",\n    \"responseData\": {\n        \"count\": 1,\n        \"data\": [\n            {\n                \"userId\": 14,\n                \"emailId\": \"kirti@winjit.com\",\n                \"fullName\": \"Pavan Maind\"\n            }\n        ]\n    }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Bad",
+            "description": "<p>Request</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "    HTTP/1.1 500 UNAUTHORIZED\n{\n    \"status\": 1050,\n    \"message\": \"Invalid token\",\n    \"responseData\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "modules/user/userRoutes.js",
+    "groupTitle": "User"
   },
   {
     "type": "post",
@@ -418,12 +761,7 @@
     },
     "version": "0.0.0",
     "filename": "modules/user/userRoutes.js",
-    "groupTitle": "User",
-    "sampleRequest": [
-      {
-        "url": "http://localhost:3000/user/loginUser"
-      }
-    ]
+    "groupTitle": "User"
   },
   {
     "type": "post",
@@ -506,11 +844,6 @@
     },
     "version": "0.0.0",
     "filename": "modules/user/userRoutes.js",
-    "groupTitle": "User",
-    "sampleRequest": [
-      {
-        "url": "http://localhost:3000/user/registerUser"
-      }
-    ]
+    "groupTitle": "User"
   }
 ]
