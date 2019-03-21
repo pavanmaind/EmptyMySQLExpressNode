@@ -2,6 +2,8 @@ const path = require('path');
 const api = require(path.resolve('.', 'modules/user/userController.js'))
 const functions = require(path.resolve('./', 'utils/functions.js'));
 const express = require('express');
+const multipart = require('connect-multiparty');
+let multipartMiddleware = multipart();
 const router = express.Router();
 
 
@@ -148,6 +150,46 @@ router.post("/loginUser", api.loginUser);
 // api to get user details
 router.get("/getUser", functions.verifyToken, api.getUser);
 
+
+
+/**
+ * @api {get} /user/getUserDataByToken Get User Details By Token
+ * @apiName getUserDataByToken
+ * @apiGroup User
+ *
+ * @apiHeader {String} auth Users unique access-token.
+ * 
+ * @apiSuccess {Object} User details
+ *
+ * @apiSuccessExample Success-Response:
+ * {
+ *     "status": 200,
+ *     "message": "Success",
+ *     "responseData": {
+ *         "emailId": "danish@winjit.com",
+ *         "fullName": "Danish S",
+ *         "userId": 49,
+ *         "imageId": 6,
+ *         "imageName": "1553151075035_me.jpg",
+ *         "fileType": "image/jpeg",
+ *         "imageNameOriginal": "me.jpg"
+ *     }
+ * }
+ *
+ * @apiError Bad Request
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 UNAUTHORIZED
+*  {
+*      "status": 1003,
+*      "message": "Please check username or password",
+*      "responseData": null
+*  }
+ */
+
+
+// api to get user details by token
+router.get("/getUserDataByToken", functions.verifyToken, api.getUserDataByToken);
 
 
 /**
@@ -379,5 +421,41 @@ router.post("/bulkUpdateUsers", functions.verifyToken, api.bulkUpdateUsers);
 
 // api to delete multiple users
 router.post("/bulkDeleteUsers", functions.verifyToken, api.bulkDeleteUsers);
+
+
+
+/**
+ * @api {post} /user/uploadProfilePic Upload Profile Picture
+ * @apiName uploadProfilePic
+ * @apiGroup User
+ *
+ * @apiHeader {String} auth Users unique access-token.
+ * 
+ * @apiParam {Object} profilePic - profilePic
+ *  
+ * @apiSuccess {Object} Success Object
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *     "status": 200,
+ *     "message": "Success"
+ * }
+ *
+ * @apiError Bad Request
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 UNAUTHORIZED
+ * {
+ *     "status": 1050,
+ *     "message": "Invalid token",
+ *     "responseData": null
+ * }
+ */
+
+
+// api to upload profile picture for user
+router.post("/uploadProfilePic", multipartMiddleware, functions.verifyToken, api.uploadProfilePic);
+
 
 module.exports = router;

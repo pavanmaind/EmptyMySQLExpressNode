@@ -7,6 +7,9 @@ const logger = require(path.resolve('./logger'));
 const msg = require(path.resolve('./', 'utils/errorMessages.js'));
 const responseGenerator = require(path.resolve('.', 'utils/responseGenerator.js'));
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+
+
 
 const hashPassword = (password, secret) => {
     // validate input parameters
@@ -86,9 +89,28 @@ const sendEmail = (to, subject, message, callback) => {
 }
 
 
+//moves file
+const moveFile = (oldPath, newPath) => {
+    return new Promise((resolve, reject) => {
+        fs.copyFile(oldPath, newPath, (err) => {
+            if (err) {
+                return reject(err);
+            }
+            else {
+                return resolve(true);
+            }
+        });
+    })
+    
+};
+
+
+
 module.exports = {
     hashPassword: hashPassword,
     createRandomString: createRandomString,
     verifyToken: verifyToken,
-    sendEmail: sendEmail
+    sendEmail: sendEmail,
+    moveFile: moveFile
+    // profilePictureStorage: profilePictureStorage
 };

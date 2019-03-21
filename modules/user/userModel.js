@@ -5,6 +5,7 @@ const msg = require(path.resolve('./', 'utils/errorMessages.js'));
 const functions = require(path.resolve('./', 'utils/functions.js'));
 const logger = require(path.resolve('./logger'));
 const config = require(path.resolve('./config'));
+const fs = require("fs");
 
 // Create container
 const userModel = {};
@@ -17,8 +18,8 @@ userModel.addUser = (req) => {
             if (user) {
                 user.secretKey = functions.createRandomString(20);
                 user.passwordHash = functions.hashPassword(user.password, user.secretKey);
-                const params = [user.fullName, user.emailId, user.passwordHash, user.secretKey]
-                db.query('call SignupUser(?,?,?,?)', params, (error, results) => {
+                const params = [user.fullName, user.emailId, user.passwordHash, user.secretKey, null]
+                db.query('call SignupUser(?,?,?,?,?)', params, (error, results) => {
                     if (!error) {
                         //check for email already exists in DB
                         if (results[0][0].IsOldRecord == 1) {
@@ -58,8 +59,8 @@ userModel.loginUser = (req) => {
             let userCredentials = validateUserCredentials(req.body);
             if (userCredentials) {
                 let strQuery = {
-                    sql: "select * from users where emailId = ? and isDeleted = ?",
-                    values: [userCredentials.emailId, 0]
+                    sql: "select u.userId, u.fullName, u.emailId, u.secretKey, u.passwordHash, p.id as imageId, p.imageName, p.fileType, p.imageNameOriginal from users u, profile_pic_metadata p where u.emailId = ? and u.isDeleted = ? and p.userId = u.userId and p.isDeleted = ?",
+                    values: [userCredentials.emailId, 0, 0]
                 };
 
                 db.query(strQuery, (error, results, fields) => {
@@ -77,7 +78,11 @@ userModel.loginUser = (req) => {
                                     {
                                         emailId: results[0].emailId,
                                         fullName: results[0].fullName,
-                                        userId: results[0].userId
+                                        userId: results[0].userId,
+                                        imageId: results[0].imageId,
+                                        imageName: results[0].imageName,
+                                        fileType: results[0].fileType,
+                                        imageNameOriginal: results[0].imageNameOriginal
                                     }, config.privateKey, {
                                         expiresIn: '365d'
                                         // expiresIn: '1m'
@@ -88,6 +93,10 @@ userModel.loginUser = (req) => {
                                         fullName: results[0].fullName,
                                         emailId: results[0].emailId,
                                         userId: results[0].userId,
+                                        imageId: results[0].imageId,
+                                        imageName: results[0].imageName,
+                                        fileType: results[0].fileType,
+                                        imageNameOriginal: results[0].imageNameOriginal,
                                         token: token
                                     }
                                 });
@@ -113,8 +122,6 @@ userModel.loginUser = (req) => {
 
     })
 }
-
-
 
 
 userModel.getUser = (req) => {
@@ -164,6 +171,13 @@ userModel.getUser = (req) => {
         });
 
     })
+}
+
+
+userModel.getUserDataByToken = (req) => {
+    delete req.result.iat;
+    delete req.result.exp;
+    return ({ code: 200, message: "Success", data: req.result })
 }
 
 
@@ -224,7 +238,7 @@ userModel.bulkInsertUsers = (req) => {
             if (usersData) {
                 let resultData = [];
                 for (let k = 0; k < usersData.length; k++) {
-                    resultObj= await registerUser(usersData[k]);
+                    resultObj = await registerUser(usersData[k], req.result.userId);
                     resultData.push(resultObj);
                 }
                 return resolve({ code: 200, message: "Success", data: resultData });
@@ -249,7 +263,7 @@ userModel.bulkUpdateUsers = (req) => {
             if (usersData) {
                 let resultData = [];
                 for (let k = 0; k < usersData.length; k++) {
-                    resultObj= await updateUser(usersData[k]);
+                    resultObj = await updateUser(usersData[k], req.result.userId);
                     resultData.push(resultObj);
                 }
                 return resolve({ code: 200, message: "Success", data: resultData });
@@ -274,7 +288,7 @@ userModel.bulkDeleteUsers = (req) => {
             if (usersData) {
                 let resultData = [];
                 for (let k = 0; k < usersData.length; k++) {
-                    resultObj= await deleteUser(usersData[k]);
+                    resultObj = await deleteUser(usersData[k]);
                     resultData.push(resultObj);
                 }
                 return resolve({ code: 200, message: "Success", data: resultData });
@@ -292,36 +306,74 @@ userModel.bulkDeleteUsers = (req) => {
 
 
 
-const registerUser = (user) => {
+// upload profile picture
+userModel.uploadProfilePic = (req) => {
+    return new Promise(async (resolve, reject) => {
+        let file = validatefile(req.files.file) ? req.files.file : false;
+        if (file) {
+            let profilePicMetadata = {
+                "imageName": Date.now() + "_" + file.name,
+                "fileType": file.type,
+                "imageNameOriginal": file.originalFilename,
+                "userId": req.result.userId
+            };
+
+            let fileStored = await functions.moveFile(file.path, "./public/images/" + profilePicMetadata.imageName)
+            if (fileStored) {
+                let metadataUpdted = await updateProfilePicMetadata(profilePicMetadata)
+                if (metadataUpdted.status) {
+                    return resolve({ code: 200, message: "Success" });
+                }
+                else {
+                    return reject({ code: 1008, message: "Error while uploading image" });
+                }
+            }
+            else {
+                // return reject(false);
+                return reject({ code: 1008, message: "Error while uploading image" });
+            }
+        }
+        else {
+            return reject({ code: 400, message: msg.invalidInput, data: null });
+        }
+    })
+}
+
+
+
+const registerUser = (user, requestedBy) => {
     return new Promise(async (res, rej) => {
         let resultObj = {};
         user.secretKey = functions.createRandomString(20);
         let password = functions.createRandomString(8);
         user.passwordHash = functions.hashPassword(password, user.secretKey);
-        const params = [user.fullName, user.emailId, user.passwordHash, user.secretKey]
+        const params = [user.fullName, user.emailId, user.passwordHash, user.secretKey, requestedBy]
         resultObj.emailId = user.emailId;
 
-        db.query('call SignupUser(?,?,?,?)', params, (error, results) => {
+        db.query('call SignupUser(?,?,?,?,?)', params, (error, results) => {
             if (!error) {
                 //check for email already exists in DB
                 if (results[0][0].IsOldRecord == 1) {
-                    resultObj.status = "Email Already Exists";
+                    resultObj.message = "Email Already Exists";
+                    resultObj.status = false;
                 }
                 else {
-                    resultObj.status = "Success";
-                    
+                    resultObj.message = "Success";
+                    resultObj.status = true;
+                    resultObj.id = results[0][0].userId;
                     // generate email body
                     let message = "Hi "
-                    +user.fullName+", <br><br>Welcome to The LoginRegApp, your credentials are as below, <br><br>Username: <b>"
-                    +user.emailId+"</b> <br>Password: <b>"
-                    +password+"</b><br><br>Click <a href="
-                    +config.frontendHost+"/users/login>here</a> to login.<br><br>Thanks,<br>LoginRegApp";
-                    
-                    functions.sendEmail(resultObj.emailId, '[LoginRegApp] '+'Registration successfull', message, function (errorEmailHandler) {
+                        + user.fullName + ", <br><br>Welcome to The LoginRegApp, your credentials are as below, <br><br>Username: <b>"
+                        + user.emailId + "</b> <br>Password: <b>"
+                        + password + "</b><br><br>Click <a href="
+                        + config.frontendHost + "/users/login>here</a> to login.<br><br>Thanks,<br>LoginRegApp";
+
+                    functions.sendEmail(resultObj.emailId, '[LoginRegApp] ' + 'Registration successfull', message, function (errorEmailHandler) {
                     });
                 }
             } else {
-                resultObj.status = "Error while processing";
+                resultObj.message = "Error while processing";
+                resultObj.status = false;
             }
             return res(resultObj)
         })
@@ -329,26 +381,30 @@ const registerUser = (user) => {
 }
 
 
-const updateUser = (user) => {
+const updateUser = (user, requestedBy) => {
     return new Promise(async (res, rej) => {
         let resultObj = {};
-        const params = [user.fullName, user.userId, 0]
-        resultObj.userId = user.userId;
+        const params = [user.fullName, requestedBy, new Date(Date.now()), user.userId, 0]
+        resultObj.id = user.userId;
 
-        db.query('update users set fullName = ? where userId = ? and isDeleted = ?', params, (error, results) => {
+        db.query('update users set fullName = ?, updatedBy = ?, updatedDate = ? where userId = ? and isDeleted = ?', params, (error, results) => {
             if (!error) {
-                if(results.changedRows){
-                    resultObj.status = "Updated Successfully";
+                if (results.changedRows) {
+                    resultObj.status = true;
+                    resultObj.message = "Success";
                 }
-                else if(results.affectedRows){
-                    resultObj.status = "No Change";
+                else if (results.affectedRows) {
+                    resultObj.status = false;
+                    resultObj.message = "No Change";
                 }
                 else {
-                    resultObj.status = msg.noRecordExists;
+                    resultObj.status = false;
+                    resultObj.message = msg.noRecordExists;
                 }
 
             } else {
-                resultObj.status = "Error while processing";
+                resultObj.status = false;
+                resultObj.message = "Error while processing";
             }
             return res(resultObj)
         })
@@ -365,7 +421,7 @@ const deleteUser = (user) => {
 
         db.query('update users set isDeleted = ? where userId = ? and isDeleted = ?', params, (error, results) => {
             if (!error) {
-                if(results.changedRows){
+                if (results.changedRows) {
                     resultObj.status = "Deleted Successfully";
                 }
                 else {
@@ -506,6 +562,39 @@ const validateBulkUserDeleteData = (input) => {
     }
     return dataToReturn;
 }
+
+
+
+// function to validate file
+const validatefile = (file) => {
+    let resp = (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/svg+xml") ? true : false;
+    return resp;
+}
+
+
+
+const updateProfilePicMetadata = (imageMetadata) => {
+    return new Promise(async (res, rej) => {
+        let resultObj = {};
+
+        const params = [true, imageMetadata.userId, imageMetadata.imageName, imageMetadata.fileType, imageMetadata.imageNameOriginal,
+            new Date(Date.now()), imageMetadata.userId, imageMetadata.userId];
+        const query = `update profile_pic_metadata set isDeleted = ? where userId = ?; insert into profile_pic_metadata(imageName, fileType, imageNameOriginal, 
+            createdDate, createdBy, userId) values(?,?,?,?,?,?)`;
+        db.query(query, params, (error, results) => {
+            if (!error) {
+                //check for email already exists in DB
+                resultObj.message = "Success";
+                resultObj.status = true;
+            } else {
+                resultObj.message = "Error while processing";
+                resultObj.status = false;
+            }
+            return res(resultObj)
+        })
+    })
+}
+
 
 
 module.exports = userModel;

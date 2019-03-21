@@ -571,6 +571,68 @@
     "groupTitle": "User"
   },
   {
+    "type": "get",
+    "url": "/user/getUserDataByToken",
+    "title": "Get User Details By Token",
+    "name": "getUserDataByToken",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth",
+            "description": "<p>Users unique access-token.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "User",
+            "description": "<p>details</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n    \"status\": 200,\n    \"message\": \"Success\",\n    \"responseData\": {\n        \"emailId\": \"danish@winjit.com\",\n        \"fullName\": \"Danish S\",\n        \"userId\": 49,\n        \"imageId\": 6,\n        \"imageName\": \"1553151075035_me.jpg\",\n        \"fileType\": \"image/jpeg\",\n        \"imageNameOriginal\": \"me.jpg\"\n    }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Bad",
+            "description": "<p>Request</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "   HTTP/1.1 500 UNAUTHORIZED\n{\n    \"status\": 1003,\n    \"message\": \"Please check username or password\",\n    \"responseData\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "modules/user/userRoutes.js",
+    "groupTitle": "User"
+  },
+  {
     "type": "post",
     "url": "/user/getUsersList",
     "title": "Get Users",
@@ -838,6 +900,81 @@
         {
           "title": "Error-Response:",
           "content": "   HTTP/1.1 500 UNAUTHORIZED\n{\n    \"status\": 1004,\n    \"message\": \"Email Already Exists\",\n    \"responseData\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "modules/user/userRoutes.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
+    "url": "/user/uploadProfilePic",
+    "title": "Upload Profile Picture",
+    "name": "uploadProfilePic",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "auth",
+            "description": "<p>Users unique access-token.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "profilePic",
+            "description": "<ul> <li>profilePic</li> </ul>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>Object</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "    HTTP/1.1 200 OK\n{\n    \"status\": 200,\n    \"message\": \"Success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Bad",
+            "description": "<p>Request</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "    HTTP/1.1 500 UNAUTHORIZED\n{\n    \"status\": 1050,\n    \"message\": \"Invalid token\",\n    \"responseData\": null\n}",
           "type": "json"
         }
       ]

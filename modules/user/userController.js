@@ -33,7 +33,6 @@ exports.registerUser = async (req, res) => {
 
 
 exports.getUser = async (req, res) => {
-
     try {
         let response = await userModel.getUser(req);
         if (response) {
@@ -43,7 +42,19 @@ exports.getUser = async (req, res) => {
     catch (error) {
         res.send(responseGenerator.getResponse(error.code, error.message, error.data));
     }
+}
 
+
+exports.getUserDataByToken = async (req, res) => {
+    try {
+        let response = await userModel.getUserDataByToken(req);
+        if (response) {
+            res.send(responseGenerator.getResponse(response.code, response.message, response.data));
+        }
+    }
+    catch (error) {
+        res.send(responseGenerator.getResponse(error.code, error.message, error.data));
+    }
 }
 
 
@@ -106,3 +117,14 @@ exports.bulkDeleteUsers = async (req, res) => {
 
 }
 
+exports.uploadProfilePic = async (req, res) => {
+
+    try {
+        let response = await userModel.uploadProfilePic(req);
+        res.send(responseGenerator.getResponse(response.code, response.message, response.data));
+    }
+    catch (error) {
+        res.send(responseGenerator.getResponse(error.code, error.message, error.data));
+    }
+
+}
